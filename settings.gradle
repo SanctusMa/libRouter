@@ -1,1 +1,2 @@
-include ':app', ':router'
+include ':app', ':router',  ':router.compile', ':router.annotation', ':localtestapp', ':childmodule'
+

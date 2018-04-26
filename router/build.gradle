@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'maven'
 android {
     compileSdkVersion 27
 
@@ -21,14 +21,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            java {
+                srcDirs 'src/main/java', '../router.annotation/src/main/java' // 指定源码目录
+            }
+        }
+    }
 
 }
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+
+dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'http://121.41.17.205:18081/nexus/content/repositories/android-realeases') {
+                authentication(userName: 'hzht', password: '123456')
+            }
+            pom.project {
+                groupId rootProject.ext.groupId
+                artifactId 'lib-router'
+                version rootProject.ext.versionName
+                packaging 'aar'
+            }
+        }
+    }
 }

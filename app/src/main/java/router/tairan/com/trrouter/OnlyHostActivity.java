@@ -1,18 +1,23 @@
 package router.tairan.com.trrouter;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import router.tairan.com.router.Router;
-import router.tairan.com.router.annotation.uri.RouterHost;
-import router.tairan.com.router.annotation.interceptor.RouterInterceptor;
-import router.tairan.com.router.annotation.uri.RouterScheme;
-import router.tairan.com.trrouter.inceptor.RealNameAouthInterceptor;
+import com.trc.android.router.annotation.interceptor.RouterInterceptor;
+import com.trc.android.router.annotation.uri.RouterHost;
+import com.trc.android.router.annotation.uri.RouterScheme;
+
+import com.trc.android.router.LifeCircleFragment;
+import com.trc.android.router.Router;
+
+import router.tairan.com.trrouter.inceptor.RandomLoginInterceptor;
 
 @RouterScheme("tlkj")
 @RouterHost("hostactivity")
-@RouterInterceptor(RealNameAouthInterceptor.class)
+@RouterInterceptor(RandomLoginInterceptor.class)
 public class OnlyHostActivity extends AppCompatActivity {
 
     @Override
@@ -21,7 +26,34 @@ public class OnlyHostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_only_host);
     }
 
-    public static void start(Router router) {
-        router.getContext().startActivity(new Intent(router.getContext(), OnlyHostActivity.class));
+    @Override
+    public void finish() {
+        Intent intent = new Intent();
+        intent.putExtra("name", "Hunter");
+        setResult(RESULT_OK, intent);
+        super.finish();
+    }
+
+    public static void start(final Router router) {
+        Context context = router.getContext();
+        if (context instanceof Activity) {
+            router.startActivity(new Intent(context, OnlyHostActivity.class), new LifeCircleFragment.Callback() {
+                @Override
+                protected void onActivityResult(int resultCode, Intent data) {
+                    Router.Callback callback = router.getCallback();
+                    if (null != callback) {
+                        if (resultCode == RESULT_OK) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("name", data.getStringExtra("name"));
+                            callback.onResult(true, bundle);
+                        } else {
+                            callback.onResult(false, null);
+                        }
+                    }
+                }
+            });
+        } else {
+            context.startActivity(new Intent(context, OnlyHostActivity.class));
+        }
     }
 }

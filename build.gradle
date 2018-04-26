@@ -19,9 +19,18 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {//公司Maven私服
+            url "http://121.41.17.205:18081/nexus/content/repositories/android-realeases"
+        }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+ext {
+    versionName = '1.1.8'
+    groupId = 'com.trc.android'
 }
