@@ -31,6 +31,6 @@ task clean(type: Delete) {
 
 
 ext {
-    versionName = '1.1.8'
+    versionName = '1.2.0'
     groupId = 'com.trc.android'
 }

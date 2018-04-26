@@ -26,5 +26,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     annotationProcessor 'com.trc.android:lib-router-processor:' + rootProject.ext.versionName
-    implementation project(':childmodule')
+    implementation 'com.trc.android:lib-router:'+rootProject.ext.versionName
+
 }
