@@ -35,14 +35,20 @@ public class Router {
     }
 
 
-    public static Router from(@Nullable Context context) {
+    public static Router fromCurrentActivity() {
+        Context context = RouterConfig.getCurrentActivity();
         if (null == context) {
-            context = RouterConfig.getCurrentActivity();
-            if (null == context) {
-                context = RouterConfig.getApplication();
-            }
+            context = RouterConfig.getApplication();
         }
         return new Router(context);
+    }
+
+    public static Router from(@Nullable Context context) {
+        if (null == context) {
+            return fromCurrentActivity();
+        } else {
+            return new Router(context);
+        }
     }
 
 

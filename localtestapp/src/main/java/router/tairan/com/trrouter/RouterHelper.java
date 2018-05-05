@@ -31,7 +31,7 @@ public class RouterHelper {
         RouterConfig.getInstance()
                 .init(application)
                 .setDefaultScheme("tlkj")
-//                .addInceptor(RandomLoginInterceptor.class)
+//                .addInterceptor(RandomLoginInterceptor.class)
                 .setRedirectAdapter(redirectAdapter);
     }
 }

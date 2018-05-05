@@ -30,26 +30,26 @@ public class OnlyHostActivity extends AppCompatActivity {
         super.finish();
     }
 
-    public static void start(final Router router) {
-        Context context = router.getContext();
-        if (context instanceof Activity) {
-            router.startActivity(new Intent(context, OnlyHostActivity.class), new LifeCircleFragment.Callback() {
-                @Override
-                protected void onActivityResult(int resultCode, Intent data) {
-                    Router.Callback callback = router.getCallback();
-                    if (null != callback) {
-                        if (resultCode == RESULT_OK) {
-                            Bundle bundle = new Bundle();
-                            bundle.putString("name", data.getStringExtra("name"));
-                            callback.onResult(true, bundle);
-                        } else {
-                            callback.onResult(false, null);
-                        }
-                    }
-                }
-            });
-        } else {
-            context.startActivity(new Intent(context, OnlyHostActivity.class));
-        }
-    }
+//    public static void start(final Router router) {
+//        Context context = router.getContext();
+//        if (context instanceof Activity) {
+//            router.startActivity(new Intent(context, OnlyHostActivity.class), new LifeCircleFragment.Callback() {
+//                @Override
+//                protected void onActivityResult(int resultCode, Intent data) {
+//                    Router.Callback callback = router.getCallback();
+//                    if (null != callback) {
+//                        if (resultCode == RESULT_OK) {
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("name", data.getStringExtra("name"));
+//                            callback.onResult(true, bundle);
+//                        } else {
+//                            callback.onResult(false, null);
+//                        }
+//                    }
+//                }
+//            });
+//        } else {
+//            context.startActivity(new Intent(context, OnlyHostActivity.class));
+//        }
+//    }
 }

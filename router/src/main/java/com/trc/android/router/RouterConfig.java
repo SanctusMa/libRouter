@@ -3,6 +3,7 @@ package com.trc.android.router;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 
 
 import java.util.LinkedList;
@@ -86,31 +87,12 @@ public class RouterConfig {
         return this;
     }
 
-//    public RouterConfig regist(Class... classes) {
-//        for (Class z : classes) {
-//            this.classes.add(z);
-//            if (strictMode) {
-//                if (!z.isAnnotationPresent(RouterComponent.class))
-//                    throw new Error("Class must be annotated with RouterComponet");
-//                try {
-//                    z.getDeclaredMethod("start", Router.class);
-//                } catch (NoSuchMethodException e) {
-//                    throw new Error("Class must be define static method start(Router router)");
-//                }
-//            }
-//        }
-//        return this;
-//    }
 
     public RouterConfig setDefaultScheme(String scheme) {
         this.defaultScheme = scheme;
         return this;
     }
 
-//    public RouterConfig setStrictMode(boolean strictMode) {
-//        this.strictMode = strictMode;
-//        return this;
-//    }
 
     public static Application getApplication() {
         return sApplication;
@@ -125,7 +107,8 @@ public class RouterConfig {
     }
 
 
-    public RouterConfig addInceptor(Class<? extends Interceptor>... inceptorClasses) {
+    @Keep
+    public RouterConfig addInterceptor(Class<? extends Interceptor>... inceptorClasses) {
         for (Class z : inceptorClasses) {
             inceptorClassList.add(z);
         }
@@ -136,7 +119,7 @@ public class RouterConfig {
         return classes;
     }
 
-    public List<Class<? extends Interceptor>> getInceptorClasses() {
+    public List<Class<? extends Interceptor>> getInterceptorClasses() {
         return inceptorClassList;
     }
 

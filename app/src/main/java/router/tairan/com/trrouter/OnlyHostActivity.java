@@ -13,7 +13,7 @@ import com.trc.android.router.annotation.uri.RouterScheme;
 import com.trc.android.router.LifeCircleFragment;
 import com.trc.android.router.Router;
 
-import router.tairan.com.trrouter.inceptor.RandomLoginInterceptor;
+import router.tairan.com.trrouter.interceptor.RandomLoginInterceptor;
 
 @RouterScheme("tlkj")
 @RouterHost("hostactivity")

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toNextPage2(View view) {
-        Router.from(this)
+        Router.fromTopActivity()
                 .setScheme("tlkj")
                 .setHost("hostactivity")
                 .setParams("userId", 110)
