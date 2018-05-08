@@ -91,6 +91,10 @@ public class Router {
         return RouterManager.route(this);
     }
 
+    public Uri toUri() {
+        return Uri.parse(toUriStr());
+    }
+
     public String toUriStr() {
         StringBuilder sb = new StringBuilder(scheme);
         sb.append("://").append(host);
