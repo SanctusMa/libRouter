@@ -86,6 +86,8 @@ public class RouterManager {
                     //如果是Activity，则直接跳转过去
                     if (Activity.class.isAssignableFrom(targetClass)) {
                         Intent intent = new Intent(router.getContext(), targetClass);
+                        if (router.getIntentFlag() != 0)
+                            intent.setFlags(router.getIntentFlag());
                         router.getContext().startActivity(intent);
                     }
                 }

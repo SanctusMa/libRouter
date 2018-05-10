@@ -29,6 +29,7 @@ public class Router {
     private String path;
     private Callback callback;
     private ArrayMap<String, String> params;
+    private int intentFlag;
 
     private Router(Context context) {
         this.context = context;
@@ -113,6 +114,15 @@ public class Router {
             }
         }
         return sb.toString();
+    }
+
+    public Router setIntentFlag(int flag) {
+        intentFlag = flag;
+        return this;
+    }
+
+    public int getIntentFlag() {
+        return intentFlag;
     }
 
     public Router setUri(Uri uri) {
