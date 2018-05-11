@@ -15,6 +15,7 @@ import com.trc.android.router.annotation.uri.RouterPath;
 import com.trc.android.router.annotation.uri.RouterScheme;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,23 @@ public class Router {
     private Callback callback;
     private ArrayMap<String, String> params;
     private int intentFlag;
+    private HashMap<String, Object> extraMap;
 
     private Router(Context context) {
         this.context = context;
+    }
+
+    public void put(String key, Object obj) {
+        if (null == extraMap) {
+            extraMap = new HashMap(10);
+        }
+        extraMap.put(key, obj);
+    }
+
+    public @Nullable
+    Object get(String key) {
+        if (null == extraMap) return null;
+        else return extraMap.get(key);
     }
 
 
