@@ -40,11 +40,12 @@ public class Router {
         this.context = context;
     }
 
-    public void put(String key, Object obj) {
+    public Router put(String key, Object obj) {
         if (null == extraMap) {
             extraMap = new HashMap(10);
         }
         extraMap.put(key, obj);
+        return this;
     }
 
     public @Nullable
