@@ -23,6 +23,8 @@ import java.util.Map;
 
 public class Router {
 
+    public static final String HASH_KEY = "#";
+    public static final String HASH_KEY_PLACEHOLDER = "HASH_KEY_PLACEHOLDER";
     private Context context;
     private List<Class<? extends Interceptor>> inceptorClassList = Collections.EMPTY_LIST;
     private String scheme = RouterConfig.getInstance().getDefaultScheme();
@@ -32,6 +34,7 @@ public class Router {
     private ArrayMap<String, String> params;
     private int intentFlag;
     private HashMap<String, Object> extraMap;
+    private Uri originUri;
 
     private Router(Context context) {
         this.context = context;
@@ -108,27 +111,34 @@ public class Router {
     }
 
     public Uri toUri() {
-        return Uri.parse(toUriStr());
+        if (null != originUri) {
+            return originUri;
+        } else {
+            return Uri.parse(toUriStr());
+        }
     }
 
     public String toUriStr() {
-        StringBuilder sb = new StringBuilder(scheme);
-        sb.append("://").append(host);
-        if (!host.endsWith("/"))
-            sb.append("/");
-        if (null != path) {
-            sb.append(path);
-        }
-        if (null != params && !params.isEmpty()) {
-            sb.append('?');
-            Iterator<Map.Entry<String, String>> it = params.entrySet().iterator();
-            if (it.hasNext()) {
-                Map.Entry<String, String> entrySet = it.next();
-                sb.append(entrySet.getKey()).append('=').append(entrySet.getValue());
-                if (it.hasNext()) sb.append('&');
+        if (null != originUri) {
+            return originUri.toString();
+        } else {
+            StringBuilder sb = new StringBuilder(scheme);
+            sb.append("://").append(host);
+            if (null != path) {
+                if (!path.startsWith("/")) sb.append('/');
+                sb.append(path);
             }
+            if (null != params && !params.isEmpty()) {
+                sb.append('?');
+                Iterator<Map.Entry<String, String>> it = params.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String, String> entrySet = it.next();
+                    sb.append(entrySet.getKey()).append('=').append(entrySet.getValue());
+                    if (it.hasNext()) sb.append('&');
+                }
+            }
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     public Router setIntentFlag(int flag) {
@@ -141,9 +151,17 @@ public class Router {
     }
 
     public Router setUri(Uri uri) {
+        this.originUri = uri;
+        boolean hasHashKey = uri.getFragment() != null;
+        if (hasHashKey) {
+            uri = Uri.parse(uri.toString().replaceFirst(HASH_KEY, HASH_KEY_PLACEHOLDER));
+        }
         this.scheme = uri.getScheme();
         this.host = uri.getHost();
         this.path = uri.getPath();
+        if (hasHashKey) {
+            path = path.replaceFirst(HASH_KEY_PLACEHOLDER, HASH_KEY);
+        }
         for (String key : uri.getQueryParameterNames()) {
             String value = uri.getQueryParameter(key);
             if (null == params)
