@@ -6,18 +6,14 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.trc.android.router.annotation.interceptor.RouterInterceptor;
 import com.trc.android.router.annotation.uri.RouterHost;
 import com.trc.android.router.annotation.uri.RouterScheme;
 
 import com.trc.android.router.LifeCircleFragment;
 import com.trc.android.router.Router;
 
-import router.tairan.com.trrouter.interceptor.RandomLoginInterceptor;
-
 @RouterScheme("tlkj")
 @RouterHost("hostactivity")
-@RouterInterceptor(RandomLoginInterceptor.class)
 public class OnlyHostActivity extends AppCompatActivity {
 
     @Override
@@ -34,26 +30,26 @@ public class OnlyHostActivity extends AppCompatActivity {
         super.finish();
     }
 
-    public static void start(final Router router) {
-        Context context = router.getContext();
-        if (context instanceof Activity) {
-            router.startActivity(new Intent(context, OnlyHostActivity.class), new LifeCircleFragment.Callback() {
-                @Override
-                protected void onActivityResult(int resultCode, Intent data) {
-                    Router.Callback callback = router.getCallback();
-                    if (null != callback) {
-                        if (resultCode == RESULT_OK) {
-                            Bundle bundle = new Bundle();
-                            bundle.putString("name", data.getStringExtra("name"));
-                            callback.onResult(true, bundle);
-                        } else {
-                            callback.onResult(false, null);
-                        }
-                    }
-                }
-            });
-        } else {
-            context.startActivity(new Intent(context, OnlyHostActivity.class));
-        }
-    }
+//    public static void start(final Router router) {
+//        Context context = router.getContext();
+//        if (context instanceof Activity) {
+//            router.startActivity(new Intent(context, OnlyHostActivity.class), new LifeCircleFragment.Callback() {
+//                @Override
+//                protected void onActivityResult(int resultCode, Intent data) {
+//                    Router.Callback callback = router.getCallback();
+//                    if (null != callback) {
+//                        if (resultCode == RESULT_OK) {
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("name", data.getStringExtra("name"));
+//                            callback.onResult(true, bundle);
+//                        } else {
+//                            callback.onResult(false, null);
+//                        }
+//                    }
+//                }
+//            });
+//        } else {
+//            context.startActivity(new Intent(context, OnlyHostActivity.class));
+//        }
+//    }
 }

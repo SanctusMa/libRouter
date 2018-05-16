@@ -22,6 +22,7 @@ public class RouterConfig {
             return router;
         }
     };
+    private RouterHandler noTargetHandler;
 
     public static RouterConfig getInstance() {
         if (null == instance) {
@@ -93,6 +94,15 @@ public class RouterConfig {
         return this;
     }
 
+
+    public RouterConfig setNoTargetHandler(RouterHandler handler) {
+        this.noTargetHandler = handler;
+        return this;
+    }
+
+    public RouterHandler getNoTargetHandler() {
+        return noTargetHandler;
+    }
 
     public static Application getApplication() {
         return sApplication;

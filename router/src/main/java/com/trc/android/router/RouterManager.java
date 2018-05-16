@@ -31,11 +31,17 @@ public class RouterManager {
             resolveByInterceptor(clazz, router, list.iterator());
             return true;
         } else {
-            Router.Callback callback = router.getCallback();
-            if (callback != null) {
-                callback.onResult(false, null);
+            RouterHandler noTargetHandler = RouterConfig.getInstance().getNoTargetHandler();
+            if (null != noTargetHandler) {
+                noTargetHandler.handle(router);
+                return true;
+            } else {
+                Router.Callback callback = router.getCallback();
+                if (callback != null) {
+                    callback.onResult(false, null);
+                }
+                return false;
             }
-            return false;
         }
     }
 

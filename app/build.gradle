@@ -1,21 +1,32 @@
 apply plugin: 'com.android.application'
-apply plugin: 'maven'
+
 android {
     compileSdkVersion 27
+
+
+
     defaultConfig {
-        applicationId "router.tairan.com.trrouter"
+        applicationId "router.tairan.com.localtestapp"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
+
 }
 
 dependencies {
@@ -25,7 +36,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    annotationProcessor 'com.trc.android:lib-router-processor:' + rootProject.ext.versionName
-    implementation 'com.trc.android:lib-router:'+rootProject.ext.versionName
+    implementation project(':childmodule')
+    annotationProcessor project(':router.compile')
 
 }

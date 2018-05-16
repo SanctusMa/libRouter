@@ -22,17 +22,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static void start(Router router) {
+    public void start(Router router) {
         router.getContext().startActivity(new Intent(router.getContext(), MainActivity.class));
     }
 
     public void toNextPage(View view) {
         //scheme如果没有则使用RouterConfig的defaultScheme
+//        Router.from(this).setHost("some_page_name").go();
         Router.from(this).setHost("qwerq").go();
     }
 
     public void toNextPage2(View view) {
-        Router.from(this)
+        Router.fromCurrentActivity()
                 .setScheme("tlkj")
                 .setHost("hostactivity")
                 .setParams("userId", 110)
