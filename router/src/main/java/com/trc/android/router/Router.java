@@ -39,6 +39,7 @@ public class Router {
     private Router(Context context) {
         this.context = context;
     }
+    private TargetLostListener targetLostListener;
 
     public Router put(String key, Object obj) {
         if (null == extraMap) {
@@ -237,9 +238,20 @@ public class Router {
         return params;
     }
 
+    public TargetLostListener getTargetLostListener() {
+        return targetLostListener;
+    }
+
+    public Router setTargetLostListener(TargetLostListener targetLostListener) {
+        this.targetLostListener = targetLostListener;
+        return this;
+    }
+
     public interface Callback {
         void onResult(boolean succeed, Bundle bundle);
     }
+
+
 
 
     public void startActivity(final Intent intent, final LifeCircleFragment.Callback lifeCircleCallback) {

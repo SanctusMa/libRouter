@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.trc.android.router.TargetLostListener;
 import com.trc.android.router.annotation.uri.RouterHost;
 import com.trc.android.router.annotation.uri.RouterScheme;
 
@@ -29,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
     public void toNextPage(View view) {
         //scheme如果没有则使用RouterConfig的defaultScheme
 //        Router.from(this).setHost("some_page_name").go();
-        Router.from(this).setHost("qwerq").go();
+        Router.from(this).setHost("qwerqz").setTargetLostListener(new TargetLostListener() {
+            @Override
+            public void onTargetLost(Router router) {
+                Toast.makeText(router.getContext(), ">>>", Toast.LENGTH_LONG).show();
+            }
+        }).go();
     }
 
     public void toNextPage2(View view) {

@@ -22,7 +22,7 @@ public class RouterConfig {
             return router;
         }
     };
-    private RouterHandler noTargetHandler;
+    private TargetLostListener targetLostListener;
 
     public static RouterConfig getInstance() {
         if (null == instance) {
@@ -95,13 +95,13 @@ public class RouterConfig {
     }
 
 
-    public RouterConfig setNoTargetHandler(RouterHandler handler) {
-        this.noTargetHandler = handler;
+    public RouterConfig setTargetLostListener(TargetLostListener handler) {
+        this.targetLostListener = handler;
         return this;
     }
 
-    public RouterHandler getNoTargetHandler() {
-        return noTargetHandler;
+    public TargetLostListener getTargetLostListener() {
+        return targetLostListener;
     }
 
     public static Application getApplication() {
