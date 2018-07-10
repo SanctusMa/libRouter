@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.trc.android.router.TargetLostListener;
@@ -60,4 +61,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void addRemoteView(View view) {
+        View v = (View) Router.from(this).setUri("test://custom_view").transform();
+        if (null != v) {
+            LinearLayout linearLayout = findViewById(R.id.root);
+            linearLayout.addView(v);
+        }
+    }
 }

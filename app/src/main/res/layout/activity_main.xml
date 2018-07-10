@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
+    android:id="@+id/root"
     tools:context=".MainActivity">
 
 
@@ -34,5 +35,12 @@
         android:layout_height="wrap_content"
         android:text="测试重定向"
         android:onClick="toNextPage3"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加一个View对象"
+        android:onClick="addRemoteView"/>
 
 </LinearLayout>

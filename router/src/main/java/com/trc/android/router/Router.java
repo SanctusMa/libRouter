@@ -10,11 +10,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.ArrayMap;
 import android.view.Window;
 
-import com.trc.android.router.annotation.uri.RouterHost;
-import com.trc.android.router.annotation.uri.RouterPath;
-import com.trc.android.router.annotation.uri.RouterScheme;
-
-import java.util.Collections;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,13 +21,14 @@ import java.util.Map;
 
 public class Router {
 
-    public static final String HASH_KEY = "#";
-    public static final String HASH_KEY_PLACEHOLDER = "HASH_KEY_PLACEHOLDER";
+    private static final String HASH_KEY = "#";
+    private static final String HASH_KEY_PLACEHOLDER = "HASH_KEY_PLACEHOLDER";
+    private static final ArrayMap<String, String> EMPTY_MAP = new ArrayMap<>(0);
     private Context context;
-    private List<Class<? extends Interceptor>> inceptorClassList = Collections.EMPTY_LIST;
-    private String scheme = RouterConfig.getInstance().getDefaultScheme();
-    private String host;
-    private String path;
+    private List<Class<? extends Interceptor>> interceptorClassList;
+    String scheme = RouterConfig.getInstance().getDefaultScheme();
+    String host;
+    String path;
     private Callback callback;
     private ArrayMap<String, String> params;
     private int intentFlag;
@@ -39,16 +38,21 @@ public class Router {
     private Router(Context context) {
         this.context = context;
     }
+
     private TargetLostListener targetLostListener;
 
-    public Router put(String key, Object obj) {
-        if (null == extraMap) {
-            extraMap = new HashMap(10);
+    //通过Router传递一些对象，比如WevView\Fragment对象等
+    public Router put(String key, @Nullable Object obj) {
+        if (null == obj) {
+            return this;
+        } else if (null == extraMap) {
+            extraMap = new HashMap(2);
         }
         extraMap.put(key, obj);
         return this;
     }
 
+    //通过Router传递一些对象，比如WevView\Fragment对象等
     public @Nullable
     Object get(String key) {
         if (null == extraMap) return null;
@@ -93,6 +97,7 @@ public class Router {
         return this;
     }
 
+    //拼接在URI中的参数
     public Router setParams(String key, Object value) {
         if (null == params)
             params = new ArrayMap();
@@ -101,9 +106,11 @@ public class Router {
     }
 
     public Router setInterceptors(Class<? extends Interceptor>... interceptorClasses) {
-        if (null == inceptorClassList) {
+        if (null == interceptorClassList) {
+            interceptorClassList = Arrays.asList(interceptorClasses);
+        } else {
             for (Class<? extends Interceptor> clazz : interceptorClasses)
-                inceptorClassList.add(clazz);
+                interceptorClassList.add(clazz);
         }
         return this;
     }
@@ -183,50 +190,32 @@ public class Router {
         return go();
     }
 
-    public Router setUri(String uriStr) {
-        return setUri(Uri.parse(uriStr));
+    /**
+     * 找到Router匹配的Class，然后调用该Class的toRemoteObject(Router router)静态方法返回一个包装好的对象
+     */
+    public Object transform() {
+        try {
+            Class matchedClass = RouterManager.getMatchedClass(this);
+            assert matchedClass != null;
+            Method method = matchedClass.getMethod("transformObject", Router.class);
+            return method.invoke(matchedClass, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
-    boolean match(Class<?> clazz) {
-        boolean atLeastMatchOne = false;
-        if (clazz.isAnnotationPresent(RouterScheme.class)) {
-            boolean matchScheme = arrayContains(clazz.getAnnotation(RouterScheme.class).value(), scheme);
-            if (!matchScheme) {
-                return false;
-            }
-            atLeastMatchOne = true;
-        }
-        if (clazz.isAnnotationPresent(RouterHost.class)) {
-            boolean matchHost = arrayContains(clazz.getAnnotation(RouterHost.class).value(), host);
-            if (!matchHost) {
-                return false;
-            }
-            atLeastMatchOne = true;
-        }
-        if (clazz.isAnnotationPresent(RouterPath.class)) {
-            boolean matchPath = arrayContains(clazz.getAnnotation(RouterPath.class).value(), path);
-            if (!matchPath) {
-                return false;
-            }
-            atLeastMatchOne = true;
-        }
-        return atLeastMatchOne;
+    public Router setUri(String uriStr) {
+        return setUri(Uri.parse(uriStr));
     }
 
     public Context getContext() {
         return context;
     }
 
-    private boolean arrayContains(String[] array, String value) {
-        for (String item : array) {
-            if (item.equals(value)) return true;
-        }
-        return false;
-    }
-
-    public List<Class<? extends Interceptor>> getInceptorClasses() {
-        return inceptorClassList;
+    List<Class<? extends Interceptor>> getInterceptorClasses() {
+        return interceptorClassList;
     }
 
     public Callback getCallback() {
@@ -234,8 +223,9 @@ public class Router {
     }
 
 
+    //拼接在URI中的参数
     public ArrayMap<String, String> getParams() {
-        return params;
+        return params == null ? EMPTY_MAP : params;
     }
 
     public TargetLostListener getTargetLostListener() {
@@ -250,8 +240,6 @@ public class Router {
     public interface Callback {
         void onResult(boolean succeed, Bundle bundle);
     }
-
-
 
 
     public void startActivity(final Intent intent, final LifeCircleFragment.Callback lifeCircleCallback) {

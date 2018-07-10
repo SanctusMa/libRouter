@@ -9,6 +9,9 @@ import android.support.annotation.NonNull;
 import com.trc.android.router.annotation.interceptor.RouterInterceptor;
 import com.trc.android.router.annotation.interceptor.RunInChildThread;
 import com.trc.android.router.annotation.interceptor.RunInMainThread;
+import com.trc.android.router.annotation.uri.RouterHost;
+import com.trc.android.router.annotation.uri.RouterPath;
+import com.trc.android.router.annotation.uri.RouterScheme;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -16,7 +19,6 @@ import java.util.LinkedList;
 
 
 public class RouterManager {
-    private static final Class[] TARGET_CLASS_START_METHOD_PARAMS = new Class[]{Router.class};
     private static final String TARGET_CLASS_START_METHOD_NAME = "start";
 
     /**
@@ -49,7 +51,8 @@ public class RouterManager {
     @NonNull
     private static LinkedList<Class<? extends Interceptor>> getInceptorClasses(Router router, Class<?> clazz) {
         LinkedList<Class<? extends Interceptor>> list = new LinkedList<>(RouterConfig.getInstance().getInterceptorClasses());
-        list.addAll(router.getInceptorClasses());
+        if (null != router.getInterceptorClasses())
+            list.addAll(router.getInterceptorClasses());
         if (clazz.isAnnotationPresent(RouterInterceptor.class)) {
             for (Class<? extends Interceptor> c : clazz.getAnnotation(RouterInterceptor.class).value()) {
                 list.add(c);
@@ -87,7 +90,7 @@ public class RouterManager {
                 }
             } else {
                 try {
-                    Method method = targetClass.getMethod(TARGET_CLASS_START_METHOD_NAME, TARGET_CLASS_START_METHOD_PARAMS);
+                    Method method = targetClass.getMethod(TARGET_CLASS_START_METHOD_NAME, Router.class);
                     method.invoke(targetClass, router);
                 } catch (NoSuchMethodException e) {
                     //如果是Activity，则直接跳转过去
@@ -121,14 +124,46 @@ public class RouterManager {
     }
 
 
-    private static Class getMatchedClass(Router router) {
+    static Class getMatchedClass(Router router) {
         for (Class clazz : RouterConfig.getInstance().getClasses()) {
-            if (router.match(clazz)) {
+            if (match(router, clazz)) {
                 return clazz;
             }
         }
         return null;
     }
 
+    static boolean match(Router router, Class<?> clazz) {
+        boolean atLeastMatchOne = false;
+        if (clazz.isAnnotationPresent(RouterScheme.class)) {
+            boolean matchScheme = arrayContains(clazz.getAnnotation(RouterScheme.class).value(), router.scheme);
+            if (!matchScheme) {
+                return false;
+            }
+            atLeastMatchOne = true;
+        }
+        if (clazz.isAnnotationPresent(RouterHost.class)) {
+            boolean matchHost = arrayContains(clazz.getAnnotation(RouterHost.class).value(), router.host);
+            if (!matchHost) {
+                return false;
+            }
+            atLeastMatchOne = true;
+        }
+        if (clazz.isAnnotationPresent(RouterPath.class)) {
+            boolean matchPath = arrayContains(clazz.getAnnotation(RouterPath.class).value(), router.path);
+            if (!matchPath) {
+                return false;
+            }
+            atLeastMatchOne = true;
+        }
+        return atLeastMatchOne;
+    }
+
+    static boolean arrayContains(String[] array, String value) {
+        for (String item : array) {
+            if (item.equals(value)) return true;
+        }
+        return false;
+    }
 
 }
