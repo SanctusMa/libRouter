@@ -1,16 +1,16 @@
-package com.trc.android.router;
+package com.trc.android.router.util;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
-public class LifeCircleFragment extends Fragment {
-    private Callback callback;
+public class BridgeFragment extends Fragment {
+    private LifeCircleCallback callback;
     private Intent intent;
     public static final int REQUEST_CODE = 100;
     boolean isFirstResume = true;
 
-    public void setCallback(Callback callback, Intent intent) {
+    public void setCallback(LifeCircleCallback callback, Intent intent) {
         this.callback = callback;
         this.intent = intent;
     }
@@ -56,19 +56,5 @@ public class LifeCircleFragment extends Fragment {
     }
 
 
-    public abstract static class Callback {
-        protected void onResume() {
-        }
-
-        protected void onPause() {
-        }
-
-        protected void onActivityResult(int resultCode, Intent data) {
-        }
-
-        protected void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        }
-
-    }
 }
 

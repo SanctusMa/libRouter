@@ -1,20 +1,16 @@
 package router.tairan.com.trrouter;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.trc.android.router.TargetLostListener;
-import com.trc.android.router.annotation.uri.RouterHost;
-import com.trc.android.router.annotation.uri.RouterScheme;
-
 import com.trc.android.router.Router;
+import com.trc.android.router.annotation.uri.RouterUri;
 
-@RouterScheme("tlkj")
-@RouterHost("main")
+@RouterUri("tlkj://main")
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -28,37 +24,30 @@ public class MainActivity extends AppCompatActivity {
         router.getContext().startActivity(new Intent(router.getContext(), MainActivity.class));
     }
 
-    public void toNextPage(View view) {
-        //scheme如果没有则使用RouterConfig的defaultScheme
-//        Router.from(this).setHost("some_page_name").go();
-        Router.from(this).setHost("qwerqz").setTargetLostListener(new TargetLostListener() {
-            @Override
-            public void onTargetLost(Router router) {
-                Toast.makeText(router.getContext(), ">>>", Toast.LENGTH_LONG).show();
-            }
-        }).go();
+    public void onClickToBaidu(View view) {
+        Router.from(this).to(Pages.BAIDU);
     }
 
-    public void toNextPage2(View view) {
-        Router.fromCurrentActivity()
-                .setScheme("tlkj")
-                .setHost("hostactivity")
-                .setParams("userId", 110)
-                .setCallback(new Router.Callback() {
-                    @Override
-                    public void onResult(boolean succeed, Bundle bundle) {
-                        if (succeed) {
-                            String name = bundle.getString("name");
-                            Toast.makeText(MainActivity.this, name, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .go();
+    public void onClickToSina(View view) {
+        Router.fromCurrentContext().to(Pages.SINA);
     }
 
-    public void toNextPage3(View view) {
-        Router.from(this).to("tlkj://trc.com");
+    public void onClickToUserProfile(View view) {
+        Router.from(this).to(Pages.USER_PROFILE);
     }
+
+
+    public void onClickToLoan(View view) {
+        Router.from(this).to(Pages.LOAN);
+    }
+
+//    public void onClickToUserProfile(View view) {
+//        Router.from(this).setCallback(new Router.Callback() {
+//            @Override public void onResult(boolean succeed, Bundle bundle) {
+//                Toast.makeText(MainActivity.this, bundle.getString("name"), Toast.LENGTH_SHORT).show();
+//            }
+//        }).to("tlkj://trc.com");
+//    }
 
 
     public void addRemoteView(View view) {
@@ -68,4 +57,5 @@ public class MainActivity extends AppCompatActivity {
             linearLayout.addView(v);
         }
     }
+
 }

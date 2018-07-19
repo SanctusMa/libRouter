@@ -19,10 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OnlyHostActivity" />
-        <activity android:name=".NoSchemeActivity" />
+        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".RouterUriAnnotationTestActivity" />
         <activity android:name=".WebViewActivity" />
-        <activity android:name=".RedirectActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoanActivity" />
+        <activity android:name=".RealNameOauthActivity"></activity>
     </application>
 
 </manifest>

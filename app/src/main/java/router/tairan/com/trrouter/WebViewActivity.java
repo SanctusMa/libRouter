@@ -1,16 +1,15 @@
 package router.tairan.com.trrouter;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.trc.android.router.annotation.uri.RouterScheme;
-
 import com.trc.android.router.Router;
+import com.trc.android.router.annotation.uri.RouterUri;
 
-@RouterScheme({"http", "https"})
+@RouterUri({Pages.HTTP})
 public class WebViewActivity extends AppCompatActivity {
 
     @Override

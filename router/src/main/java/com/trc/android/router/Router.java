@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.ArrayMap;
@@ -41,8 +42,8 @@ public class Router {
 
     private TargetLostListener targetLostListener;
 
-    //通过Router传递一些对象，比如WevView\Fragment对象等
-    public Router put(String key, @Nullable Object obj) {
+    //通过Router传递一些对象，比如WevView/Fragment/Activity/Model对象等
+    public Router putExtra(String key, @Nullable Object obj) {
         if (null == obj) {
             return this;
         } else if (null == extraMap) {
@@ -52,15 +53,13 @@ public class Router {
         return this;
     }
 
-    //通过Router传递一些对象，比如WevView\Fragment对象等
-    public @Nullable
-    Object get(String key) {
+    //通过Router传递一些对象，比如WevView/Fragment/Activity/Model对象等
+    public @Nullable Object getExtra(String key) {
         if (null == extraMap) return null;
         else return extraMap.get(key);
     }
 
-
-    public static Router fromCurrentActivity() {
+    public static Router fromCurrentContext() {
         Context context = RouterConfig.getCurrentActivity();
         if (null == context) {
             context = RouterConfig.getApplication();
@@ -70,26 +69,10 @@ public class Router {
 
     public static Router from(@Nullable Context context) {
         if (null == context) {
-            return fromCurrentActivity();
+            return fromCurrentContext();
         } else {
             return new Router(context);
         }
-    }
-
-
-    public Router setScheme(String scheme) {
-        this.scheme = scheme;
-        return this;
-    }
-
-    public Router setHost(String host) {
-        this.host = host;
-        return this;
-    }
-
-    public Router setPath(String path) {
-        this.path = path;
-        return this;
     }
 
     public Router setCallback(Callback callback) {
@@ -97,12 +80,23 @@ public class Router {
         return this;
     }
 
-    //拼接在URI中的参数
-    public Router setParams(String key, Object value) {
-        if (null == params)
+    /**
+     * 拼接在URI中的参数
+     * @param value 只接受基本类型,并最终转化成String类型
+     */
+    public Router setParam(String key, Object value) {
+        if (null == value) {
+            return this;
+        } else if (null == params) {
             params = new ArrayMap();
+        }
         params.put(key, String.valueOf(value));
         return this;
+    }
+
+    //拼接在URI中的参数
+    public String getParam(String key) {
+        return params == null ? "" : params.get(key);
     }
 
     public Router setInterceptors(Class<? extends Interceptor>... interceptorClasses) {
@@ -222,12 +216,6 @@ public class Router {
         return callback;
     }
 
-
-    //拼接在URI中的参数
-    public ArrayMap<String, String> getParams() {
-        return params == null ? EMPTY_MAP : params;
-    }
-
     public TargetLostListener getTargetLostListener() {
         return targetLostListener;
     }
@@ -239,17 +227,5 @@ public class Router {
 
     public interface Callback {
         void onResult(boolean succeed, Bundle bundle);
-    }
-
-
-    public void startActivity(final Intent intent, final LifeCircleFragment.Callback lifeCircleCallback) {
-        if (context instanceof FragmentActivity) {
-            LifeCircleFragment fragment = new LifeCircleFragment();
-            fragment.setCallback(lifeCircleCallback, intent);
-            ((FragmentActivity) context).getSupportFragmentManager().beginTransaction().add(Window.ID_ANDROID_CONTENT, fragment).commit();
-
-        } else {
-            ((Activity) context).startActivityForResult(intent, 0);
-        }
     }
 }

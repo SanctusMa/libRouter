@@ -1,16 +1,11 @@
 package router.tairan.com.trrouter;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import com.trc.android.router.Router;
-import com.trc.android.router.annotation.uri.RouterHost;
-import com.trc.android.router.annotation.uri.RouterScheme;
+import com.trc.android.router.annotation.uri.RouterUri;
 
-@RouterScheme("test")
-@RouterHost("custom_view")
+@RouterUri("test://custom_view")
 public class RemoteViewDemo extends android.support.v7.widget.AppCompatTextView {
 
     public RemoteViewDemo(Context context) {

@@ -2,9 +2,7 @@ package com.trc.android.router.compile;
 
 import com.google.auto.service.AutoService;
 import com.trc.android.router.annotation.compile.RouterAppModule;
-import com.trc.android.router.annotation.uri.RouterHost;
-import com.trc.android.router.annotation.uri.RouterPath;
-import com.trc.android.router.annotation.uri.RouterScheme;
+import com.trc.android.router.annotation.uri.RouterUri;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,9 +26,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 @AutoService(Processor.class)
-@SupportedAnnotationTypes({"com.trc.android.router.annotation.uri.RouterScheme"
-        , "com.trc.android.router.annotation.uri.RouterHost"
-        , "com.trc.android.router.annotation.uri.RouterPath"
+@SupportedAnnotationTypes({"com.trc.android.router.annotation.uri.RouterUri"
         , "com.trc.android.router.annotation.compile.RouterAppModule"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -62,13 +58,8 @@ public class RouterAnnotationProcessor extends AbstractProcessor {
         if (roundEnv.getElementsAnnotatedWith(RouterAppModule.class).iterator().hasNext()) {
             isAppModule = true;
         }
-        for (Element element : roundEnv.getElementsAnnotatedWith(RouterScheme.class)) {
-            hashSet.add(element.toString());
-        }
-        for (Element element : roundEnv.getElementsAnnotatedWith(RouterPath.class)) {
-            hashSet.add(element.toString());
-        }
-        for (Element element : roundEnv.getElementsAnnotatedWith(RouterHost.class)) {
+
+        for (Element element : roundEnv.getElementsAnnotatedWith(RouterUri.class)) {
             hashSet.add(element.toString());
         }
         if (!roundEnv.processingOver()) return;

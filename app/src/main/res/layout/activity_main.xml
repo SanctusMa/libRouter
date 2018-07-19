@@ -22,19 +22,26 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="withUri点击跳转到下一页"
-        android:onClick="toNextPage"/>
+        android:text="跳转到百度"
+        android:onClick="onClickToBaidu"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="withSchemeHost点击跳转到下一页"
-        android:onClick="toNextPage2"/>
+        android:text="测试路由新浪到百度"
+        android:onClick="onClickToSina"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="测试重定向"
-        android:onClick="toNextPage3"/>
+        android:text="去用户详情页面（测试登录拦截器）"
+        android:onClick="onClickToUserProfile"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="去贷款（测试异步拦截器：实名认证校验拦截器）"
+        android:onClick="onClickToLoan"/>
 
 
     <Button

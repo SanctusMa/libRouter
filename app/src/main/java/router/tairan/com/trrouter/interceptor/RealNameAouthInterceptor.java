@@ -1,20 +1,24 @@
 package router.tairan.com.trrouter.interceptor;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
-import com.trc.android.router.annotation.interceptor.RunInMainThread;
+import android.widget.Toast;
 
 import com.trc.android.router.Interceptor;
 import com.trc.android.router.Router;
+import com.trc.android.router.annotation.interceptor.RunInMainThread;
+
+import router.tairan.com.trrouter.Pages;
 
 @RunInMainThread
 public class RealNameAouthInterceptor implements Interceptor {
+    public static boolean isRealNameOauthPast;
 
     @Override
     public void handle(final Router router, final Callback callback) {
-        Log.e(">>>", "模拟异步实名认证状态");
+        Toast.makeText(router.getContext(), "请求服务器，获取实名认证状态", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -24,15 +28,21 @@ public class RealNameAouthInterceptor implements Interceptor {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                final boolean goOn = System.currentTimeMillis() % 2 == 0;
-                callback.next(router);
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.e(">>>", goOn ? "已认证" : "未认证");
-                    }
-                });
-
+                if (isRealNameOauthPast) {
+                    callback.next(router);
+                }else{
+                    Router.Callback oauthCallback = new Router.Callback() {
+                        @Override
+                        public void onResult(boolean succeed, Bundle bundle) {
+                            if (succeed) {
+                                callback.next(router);
+                            }else {
+                                Toast.makeText(router.getContext(), "认证失败", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    };
+                    Router.from(router.getContext()).setCallback(oauthCallback).to(Pages.REAL_NAME_OAUTH);
+                }
             }
         }).start();
     }

@@ -27,10 +27,11 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+    delete rootProject.file('.idea')
 }
 
 
 ext {
-    versionName = '1.3.1.2'
+    versionName = '2.0.0.2'
     groupId = 'com.trc.android'
 }
