@@ -16,6 +16,7 @@ public class LifeCircleUtil {
         if (null == context) context = RouterConfig.getCurrentActivity();
         if (context instanceof FragmentActivity) {
             BridgeFragment fragment = new BridgeFragment();
+            lifeCircleCallback.setHostFragment(fragment);
             fragment.setCallback(lifeCircleCallback, intent);
             ((FragmentActivity) context).getSupportFragmentManager().beginTransaction().add(Window.ID_ANDROID_CONTENT, fragment).commit();
         } else if (null != RouterConfig.getCurrentActivity() && RouterConfig.getCurrentActivity() instanceof FragmentActivity) {

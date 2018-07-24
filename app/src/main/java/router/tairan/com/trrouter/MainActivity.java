@@ -41,14 +41,6 @@ public class MainActivity extends AppCompatActivity {
         Router.from(this).to(Pages.LOAN);
     }
 
-    public void onClickToUserProfile(View view) {
-        Router.from(this).setCallback(new Router.Callback() {
-            @Override public void onResult(boolean succeed, Bundle bundle) {
-                Toast.makeText(MainActivity.this, bundle.getString("name"), Toast.LENGTH_SHORT).show();
-            }
-        }).to("tlkj://trc.com");
-    }
-
 
     public void addRemoteView(View view) {
         View v = (View) Router.from(this).setUri("test://custom_view").transform();

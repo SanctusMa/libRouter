@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     callback.onResult(false, null);
                 }
+                removeCallback();//删除Context添加的BridgeFragment
             }
         });
     }
