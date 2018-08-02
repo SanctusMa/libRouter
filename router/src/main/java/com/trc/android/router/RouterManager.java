@@ -103,7 +103,12 @@ public class RouterManager {
                         Intent intent = new Intent(context, targetClass);
                         if (router.getIntentFlag() != 0)
                             intent.setFlags(router.getIntentFlag());
-                        context.startActivity(intent);
+                        if (context instanceof Activity) {
+                            ((Activity) context).startActivityForResult(intent, 0);
+                        } else {
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        }
                     }
                 }
             }
