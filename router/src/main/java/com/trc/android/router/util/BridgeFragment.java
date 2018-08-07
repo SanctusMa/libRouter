@@ -30,11 +30,9 @@ public class BridgeFragment extends Fragment {
 
     @Override
     public void onPause() {
+        super.onPause();
         if (null != callback) {
-            super.onPause();
-            if (null != callback) {
-                callback.onPause();
-            }
+            callback.onPause();
         }
     }
 

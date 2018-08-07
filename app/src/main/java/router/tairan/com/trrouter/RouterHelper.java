@@ -37,8 +37,6 @@ public class RouterHelper {
     public static void init(Application application) {
         RouterConfig.getInstance()
                 .init(application)
-                .setTargetLostListener(targetLostListener)
-                .setDefaultScheme("tlkj")
 //                .addInterceptor(RandomLoginInterceptor.class)
                 .setRedirectAdapter(redirectAdapter);
     }

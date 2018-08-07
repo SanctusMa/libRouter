@@ -1,19 +1,17 @@
 package com.trc.android.router;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.view.Window;
 
 import com.trc.android.router.annotation.interceptor.RouterInterceptor;
 import com.trc.android.router.annotation.interceptor.RunInChildThread;
 import com.trc.android.router.annotation.interceptor.RunInMainThread;
 import com.trc.android.router.annotation.uri.RouterUri;
-import com.trc.android.router.util.LifeCircleUtil;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -23,7 +21,7 @@ import java.util.LinkedList;
 
 public class RouterManager {
     private static final String TARGET_CLASS_START_METHOD_NAME = "start";
-    private static final HashMap<String, Class> classCacheMap = new HashMap<>();
+    private static HashMap<String, Class> classCacheMap;
 
     /**
      * @param router
@@ -69,28 +67,12 @@ public class RouterManager {
         try {
             if (iterator.hasNext()) {
                 final Class<? extends Interceptor> interceptorClass = iterator.next();
-                if (Looper.myLooper() == Looper.getMainLooper()) {//当前在主线程
-                    if (interceptorClass.isAnnotationPresent(RunInChildThread.class)) {//如果要求在子线程运行
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                handleByInterceptor(interceptorClass, router, targetClass, iterator);
-                            }
-                        }).start();
-                    } else {
-                        handleByInterceptor(interceptorClass, router, targetClass, iterator);
-                    }
-                } else {//当前在子线程
-                    if (interceptorClass.isAnnotationPresent(RunInMainThread.class)) {//要求在主线程
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                handleByInterceptor(interceptorClass, router, targetClass, iterator);
-                            }
-                        });
-                    } else {
-                        handleByInterceptor(interceptorClass, router, targetClass, iterator);
-                    }
+                if (interceptorClass.isAnnotationPresent(RunInChildThread.class) && Looper.myLooper() == Looper.getMainLooper()) {//如果要求在子线程运行
+                    new Thread(() -> handleByInterceptor(interceptorClass, router, targetClass, iterator)).start();
+                } else if (interceptorClass.isAnnotationPresent(RunInMainThread.class) && Looper.myLooper() != Looper.getMainLooper()) {//要求在主线程
+                    new Handler(Looper.getMainLooper()).post(() -> handleByInterceptor(interceptorClass, router, targetClass, iterator));
+                } else {
+                    handleByInterceptor(interceptorClass, router, targetClass, iterator);
                 }
             } else {
                 try {
@@ -101,8 +83,6 @@ public class RouterManager {
                     if (Activity.class.isAssignableFrom(targetClass)) {
                         Context context = router.getContext();
                         Intent intent = new Intent(context, targetClass);
-                        if (router.getIntentFlag() != 0)
-                            intent.setFlags(router.getIntentFlag());
                         if (context instanceof Activity) {
                             ((Activity) context).startActivityForResult(intent, 0);
                         } else {
@@ -112,7 +92,15 @@ public class RouterManager {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (
+                ActivityNotFoundException e)
+
+        {
+            e.printStackTrace();
+        } catch (
+                Exception e)
+
+        {
             e.printStackTrace();
         }
 
@@ -120,16 +108,11 @@ public class RouterManager {
 
     private static void handleByInterceptor(Class<? extends Interceptor> inceptorClass, Router router, final Class<?> targetClass, final Iterator<Class<? extends Interceptor>> iterator) {
         try {
-            inceptorClass.newInstance().handle(router, new Interceptor.Callback() {
-                @Override
-                public void next(Router router) {
-                    resolveByInterceptor(targetClass, router, iterator);
-                }
-            });
-        } catch (InstantiationException e1) {
-            e1.printStackTrace();
-        } catch (IllegalAccessException e1) {
-            e1.printStackTrace();
+            inceptorClass.newInstance().handle(router, router1 -> resolveByInterceptor(targetClass, router1, iterator));
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
@@ -137,10 +120,14 @@ public class RouterManager {
     //返回匹配程度最高的Class
     static Class getMatchedClass(Router router) {
         String uri = router.toUriStr();
+        RouterConfig routerConfig = RouterConfig.getInstance();
+        if (classCacheMap == null) {
+            classCacheMap = new HashMap<>(routerConfig.getClasses().length);
+        }
         Class targetClass = classCacheMap.get(uri);
         if (null == targetClass) {
             int lastMatch = 0;
-            for (Class clazz : RouterConfig.getInstance().getClasses()) {
+            for (Class clazz : routerConfig.getClasses()) {
                 int match = match(uri, clazz);
                 if (match > lastMatch) {
                     lastMatch = match;

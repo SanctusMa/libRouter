@@ -1,40 +1,29 @@
 package com.trc.android.router;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.util.ArrayMap;
-import android.view.Window;
+import android.support.v4.util.SimpleArrayMap;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 
 public class Router {
 
-    private static final String HASH_KEY = "#";
-    private static final String HASH_KEY_PLACEHOLDER = "HASH_KEY_PLACEHOLDER";
-    private static final ArrayMap<String, String> EMPTY_MAP = new ArrayMap<>(0);
+    private static final String METHOD_TRANSFORM_OBJECT = "transformObject";
+    private boolean isUriSet;
     private Context context;
     private List<Class<? extends Interceptor>> interceptorClassList;
-    String scheme = RouterConfig.getInstance().getDefaultScheme();
-    String host;
-    String path;
     private Callback callback;
-    private ArrayMap<String, String> params;
-    private int intentFlag;
-    private HashMap<String, Object> extraMap;
-    private Uri originUri;
+    private StringBuilder urlBuilder;
+    /**
+     * 最终拼接成的链接{@link #toUriStr()}
+     */
+    private String url;
+    private SimpleArrayMap<String, Object> extraMap;
 
     private Router(Context context) {
         this.context = context;
@@ -47,16 +36,24 @@ public class Router {
         if (null == obj) {
             return this;
         } else if (null == extraMap) {
-            extraMap = new HashMap(2);
+            extraMap = new SimpleArrayMap<>(2);
         }
         extraMap.put(key, obj);
         return this;
     }
 
     //通过Router传递一些对象，比如WevView/Fragment/Activity/Model对象等
-    public @Nullable Object getExtra(String key) {
+    @Nullable
+    public Object getExtra(String key) {
         if (null == extraMap) return null;
         else return extraMap.get(key);
+    }
+
+    /**
+     * 等同于Router.from(router.getContext())
+     */
+    public static Router from(Router router) {
+        return from(router.context);
     }
 
     public static Router fromCurrentContext() {
@@ -82,23 +79,37 @@ public class Router {
 
     /**
      * 拼接在URI中的参数
+     *
      * @param value 只接受基本类型,并最终转化成String类型
      */
     public Router setParam(String key, Object value) {
+        url = null;
         if (null == value) {
             return this;
-        } else if (null == params) {
-            params = new ArrayMap();
+        } else {
+            if (null == urlBuilder) urlBuilder = new StringBuilder();
+            if (urlBuilder.indexOf("?") > 0) {
+                char lastChar = urlBuilder.charAt(urlBuilder.length() - 1);
+                if (lastChar != '?')
+                    urlBuilder.append('&');
+            } else if (urlBuilder.length() > 0) {
+                urlBuilder.append('?');
+            }
+            urlBuilder.append(key).append('=').append(value);
+            return this;
         }
-        params.put(key, String.valueOf(value));
-        return this;
     }
 
-    //拼接在URI中的参数
+    /**
+     * 拼接在URI中的参数
+     */
     public String getParam(String key) {
-        return params == null ? "" : params.get(key);
+        return UriUtil.getParam(toUriStr(), key);
     }
 
+    /**
+     * 设置拦截器
+     */
     public Router setInterceptors(Class<? extends Interceptor>... interceptorClasses) {
         if (null == interceptorClassList) {
             interceptorClassList = Arrays.asList(interceptorClasses);
@@ -114,71 +125,52 @@ public class Router {
     }
 
     public Uri toUri() {
-        if (null != originUri) {
-            return originUri;
-        } else {
-            return Uri.parse(toUriStr());
-        }
+        return Uri.parse(toUriStr());
     }
 
     public String toUriStr() {
-        if (null != originUri) {
-            return originUri.toString();
+        assert urlBuilder != null;
+        if (url == null) url = urlBuilder.toString();
+        return url;
+    }
+
+
+    public Router setUri(String uri) {
+        if (isUriSet) throw new IllegalStateException("路由地址不能修改");
+        isUriSet = true;
+        url = null;
+        if (null == urlBuilder) urlBuilder = new StringBuilder(uri.length());
+        if (urlBuilder.length() == 0) {
+            urlBuilder.append(uri);
         } else {
-            StringBuilder sb = new StringBuilder(scheme);
-            sb.append("://").append(host);
-            if (null != path) {
-                if (!path.startsWith("/")) sb.append('/');
-                sb.append(path);
+            char lastChar = uri.charAt(uri.length() - 1);
+            if (uri.indexOf('?') > 0) {
+                if (lastChar != '&')
+                    urlBuilder.insert(0, '&');
+            } else {
+                if (lastChar != '?')
+                    urlBuilder.insert(0, '?');
             }
-            if (null != params && !params.isEmpty()) {
-                sb.append('?');
-                Iterator<Map.Entry<String, String>> it = params.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, String> entrySet = it.next();
-                    sb.append(entrySet.getKey()).append('=').append(entrySet.getValue());
-                    if (it.hasNext()) sb.append('&');
-                }
-            }
-            return sb.toString();
+            urlBuilder.insert(0, uri);
         }
-    }
-
-    public Router setIntentFlag(int flag) {
-        intentFlag = flag;
         return this;
-    }
-
-    public int getIntentFlag() {
-        return intentFlag;
     }
 
     public Router setUri(Uri uri) {
-        this.originUri = uri;
-        boolean hasHashKey = uri.getFragment() != null;
-        if (hasHashKey) {
-            uri = Uri.parse(uri.toString().replaceFirst(HASH_KEY, HASH_KEY_PLACEHOLDER));
-        }
-        this.scheme = uri.getScheme();
-        this.host = uri.getHost();
-        this.path = uri.getPath();
-        if (hasHashKey) {
-            path = path.replaceFirst(HASH_KEY_PLACEHOLDER, HASH_KEY);
-        }
-        for (String key : uri.getQueryParameterNames()) {
-            String value = uri.getQueryParameter(key);
-            if (null == params)
-                params = new ArrayMap();
-            params.put(key, String.valueOf(value));
-        }
+        setUri(uri.toString());
         return this;
     }
 
+    /**
+     * {@link #to(Uri)}
+     */
     public boolean to(Uri uri) {
-        setUri(uri);
-        return go();
+        return to(uri.toString());
     }
 
+    /**
+     * 找到Router匹配的Class，然后调用该Class的start(Router router)静态方法返回一个包装好的对象
+     */
     public boolean to(String uri) {
         setUri(uri);
         return go();
@@ -191,7 +183,7 @@ public class Router {
         try {
             Class matchedClass = RouterManager.getMatchedClass(this);
             assert matchedClass != null;
-            Method method = matchedClass.getMethod("transformObject", Router.class);
+            Method method = matchedClass.getDeclaredMethod(METHOD_TRANSFORM_OBJECT, Router.class);
             return method.invoke(matchedClass, this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -199,10 +191,6 @@ public class Router {
         return null;
     }
 
-
-    public Router setUri(String uriStr) {
-        return setUri(Uri.parse(uriStr));
-    }
 
     public Context getContext() {
         return context;
@@ -216,7 +204,7 @@ public class Router {
         return callback;
     }
 
-    public TargetLostListener getTargetLostListener() {
+    TargetLostListener getTargetLostListener() {
         return targetLostListener;
     }
 
@@ -226,6 +214,10 @@ public class Router {
     }
 
     public interface Callback {
-        void onResult(boolean succeed, Bundle bundle);
+        void onResult(boolean succeed, Map map);
+    }
+    @Nullable
+    public String getScheme(){
+        return UriUtil.getScheme(toUriStr());
     }
 }

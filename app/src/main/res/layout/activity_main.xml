@@ -50,4 +50,18 @@
         android:text="添加一个View对象"
         android:onClick="addRemoteView"/>
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to_hello"
+        android:onClick="onClickDefaultRouter1"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to_router_hello"
+        android:onClick="onClickDefaultRouter2"/>
+
 </LinearLayout>

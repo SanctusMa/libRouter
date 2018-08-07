@@ -9,7 +9,7 @@ import android.webkit.WebViewClient;
 import com.trc.android.router.Router;
 import com.trc.android.router.annotation.uri.RouterUri;
 
-@RouterUri({Pages.HTTP})
+@RouterUri({Pages.HTTP, Pages.HTTPS})
 public class WebViewActivity extends AppCompatActivity {
 
     @Override

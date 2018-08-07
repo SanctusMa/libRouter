@@ -3,12 +3,15 @@ package router.tairan.com.trrouter.interceptor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.trc.android.router.Interceptor;
 import com.trc.android.router.Router;
 import com.trc.android.router.annotation.interceptor.RunInMainThread;
+
+import java.util.Map;
 
 import router.tairan.com.trrouter.Pages;
 
@@ -33,7 +36,7 @@ public class RealNameAouthInterceptor implements Interceptor {
                 }else{
                     Router.Callback oauthCallback = new Router.Callback() {
                         @Override
-                        public void onResult(boolean succeed, Bundle bundle) {
+                        public void onResult(boolean succeed, Map bundle) {
                             if (succeed) {
                                 callback.next(router);
                             }else {

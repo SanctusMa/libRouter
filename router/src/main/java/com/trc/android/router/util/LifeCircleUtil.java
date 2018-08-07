@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 
 import com.trc.android.router.RouterConfig;
-import com.trc.android.router.RouterManager;
 
 public class LifeCircleUtil {
 

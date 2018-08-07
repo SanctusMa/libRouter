@@ -24,7 +24,8 @@
         <activity android:name=".WebViewActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".LoanActivity" />
-        <activity android:name=".RealNameOauthActivity"></activity>
+        <activity android:name=".RealNameOauthActivity" />
+        <activity android:name=".DefautSchemeTestActivity"></activity>
     </application>
 
 </manifest>

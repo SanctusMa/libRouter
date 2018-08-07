@@ -5,7 +5,6 @@ import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.Keep;
 
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,8 +13,7 @@ public class RouterConfig {
     private static Activity sCurrentActivity;
     private static RouterConfig instance;
     private static Class[] classes = new Class[0];
-    private LinkedList<Class<? extends Interceptor>> inceptorClassList = new LinkedList<>();
-    private String defaultScheme = "default";
+    private LinkedList<Class<? extends Interceptor>> interceptorClassList = new LinkedList<>();
     private RedirectAdapter redirectAdapter = new RedirectAdapter() {
         @Override
         public Router adapt(Router router) {
@@ -88,13 +86,6 @@ public class RouterConfig {
         return this;
     }
 
-
-    public RouterConfig setDefaultScheme(String scheme) {
-        this.defaultScheme = scheme;
-        return this;
-    }
-
-
     public RouterConfig setTargetLostListener(TargetLostListener handler) {
         this.targetLostListener = handler;
         return this;
@@ -112,15 +103,12 @@ public class RouterConfig {
         return sCurrentActivity;
     }
 
-    public String getDefaultScheme() {
-        return this.defaultScheme;
-    }
 
 
     @Keep
     public RouterConfig addInterceptor(Class<? extends Interceptor>... inceptorClasses) {
         for (Class z : inceptorClasses) {
-            inceptorClassList.add(z);
+            interceptorClassList.add(z);
         }
         return this;
     }
@@ -130,7 +118,7 @@ public class RouterConfig {
     }
 
     public List<Class<? extends Interceptor>> getInterceptorClasses() {
-        return inceptorClassList;
+        return interceptorClassList;
     }
 
     public RouterConfig setRedirectAdapter(RedirectAdapter adapter) {

@@ -64,7 +64,7 @@ public class RouterAnnotationProcessor extends AbstractProcessor {
         }
         if (!roundEnv.processingOver()) return;
         if (isAppModule || !hashSet.isEmpty()) {
-            File file = new File(new File("").getAbsolutePath() + "/.idea/router.txt");
+            File file = new File(new File("").getAbsolutePath() + "/build/router.txt");
             File parentFile = file.getParentFile();
             if (!parentFile.exists()) {
                 parentFile.mkdirs();

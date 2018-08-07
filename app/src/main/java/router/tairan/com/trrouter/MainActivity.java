@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.trc.android.router.Router;
 import com.trc.android.router.annotation.uri.RouterUri;
@@ -50,4 +49,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onClickDefaultRouter1(View view) {
+        Router.fromCurrentContext().to(Pages.TEST_DEFAULT_SCHEME);
+    }
+
+    public void onClickDefaultRouter2(View view) {
+        Router.fromCurrentContext().to(Pages.Scheme.DEFAULT + "://" + Pages.TEST_DEFAULT_SCHEME);
+    }
 }
