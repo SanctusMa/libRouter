@@ -2,6 +2,7 @@ package router.tairan.com.trrouter;
 
 public class Pages {
     public static final String BAIDU = "https://www.baidu.com";
+    public static final String WANGYI = "https://www.163.com";
     public static final String SINA = "https://www.sina.com";
     public static final String LOAN = "test://loan";
     public static final String LOGIN = "test://login";

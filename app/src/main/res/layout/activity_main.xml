@@ -27,8 +27,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="测试路由新浪到百度"
-        android:onClick="onClickToSina"/>
+        android:text="测试路由：新浪->百度->网易"
+        android:onClick="onClickToWangyi"/>
 
     <Button
         android:layout_width="wrap_content"

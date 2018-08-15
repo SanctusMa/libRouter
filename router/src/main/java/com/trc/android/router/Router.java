@@ -2,6 +2,7 @@ package com.trc.android.router;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 
@@ -128,6 +129,7 @@ public class Router {
         return Uri.parse(toUriStr());
     }
 
+    @NonNull
     public String toUriStr() {
         assert urlBuilder != null;
         if (url == null) url = urlBuilder.toString();
@@ -216,8 +218,32 @@ public class Router {
     public interface Callback {
         void onResult(boolean succeed, Map map);
     }
+
     @Nullable
-    public String getScheme(){
+    public String getScheme() {
         return UriUtil.getScheme(toUriStr());
+    }
+
+    /**
+     * @return 是否有处理该Uri的Handler（Class）
+     */
+    public boolean hasHandler() {
+        return RouterManager.hasTarget(this);
+    }
+
+    /**
+     * @return 只判断对应的toUriStr()是否相等
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Router router = (Router) o;
+        return toUriStr().equals(router.toUriStr());
+    }
+
+    @Override
+    public int hashCode() {
+        return null == urlBuilder ? super.hashCode() : urlBuilder.hashCode();
     }
 }

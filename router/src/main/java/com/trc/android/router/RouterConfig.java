@@ -10,16 +10,13 @@ import java.util.List;
 
 
 public class RouterConfig {
+    public static final String CLASS_HOLD_ADDRESS_FOR_URI = "com.trc.android.router.build.AddressList";
+    public static final String GET_ANNOTATED_CLASSES_METHOD = "getAnnotatedClasses";
     private static Activity sCurrentActivity;
     private static RouterConfig instance;
     private static Class[] classes = new Class[0];
     private LinkedList<Class<? extends Interceptor>> interceptorClassList = new LinkedList<>();
-    private RedirectAdapter redirectAdapter = new RedirectAdapter() {
-        @Override
-        public Router adapt(Router router) {
-            return router;
-        }
-    };
+    private RedirectAdapter redirectAdapter = router -> router;
     private TargetLostListener targetLostListener;
 
     public static RouterConfig getInstance() {
@@ -28,8 +25,8 @@ public class RouterConfig {
                 if (null == instance) {
                     instance = new RouterConfig();
                     try {
-                        Class addressListClazz = Class.forName("com.trc.android.router.build.AddressList");
-                        classes = (Class[]) addressListClazz.getMethod("getAnnotatedClasses").invoke(addressListClazz);
+                        Class addressListClazz = Class.forName(CLASS_HOLD_ADDRESS_FOR_URI);
+                        classes = (Class[]) addressListClazz.getMethod(GET_ANNOTATED_CLASSES_METHOD).invoke(addressListClazz);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -80,7 +77,9 @@ public class RouterConfig {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-
+                if (sCurrentActivity == activity) {
+                    sCurrentActivity = null;
+                }
             }
         });
         return this;
@@ -102,7 +101,6 @@ public class RouterConfig {
     public static Activity getCurrentActivity() {
         return sCurrentActivity;
     }
-
 
 
     @Keep

@@ -27,7 +27,12 @@ public class MainActivity extends AppCompatActivity {
         Router.from(this).to(Pages.BAIDU);
     }
 
-    public void onClickToSina(View view) {
+    public void onClickToWangyi(View view) {
+        //    路由配置如下
+        //    static {
+        //        redirectMap.put(Pages.SINA, Pages.BAIDU);
+        //        redirectMap.put(Pages.BAIDU, Pages.WANGYI);
+        //    }
         Router.fromCurrentContext().to(Pages.SINA);
     }
 

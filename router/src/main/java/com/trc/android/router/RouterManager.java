@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.trc.android.router.annotation.interceptor.RouterInterceptor;
 import com.trc.android.router.annotation.interceptor.RunInChildThread;
@@ -27,8 +28,8 @@ public class RouterManager {
      * @param router
      * @return true 是否找到了处理Router的类
      */
-    public static boolean route(Router router) {
-        router = RouterConfig.getInstance().getRedirectAdapter().adapt(router);
+    static boolean route(Router router) {
+        router = adapt(router);
         Class<?> clazz = getMatchedClass(router);
         if (null != clazz) {
             LinkedList<Class<? extends Interceptor>> list = getInterceptorClasses(router, clazz);
@@ -48,6 +49,28 @@ public class RouterManager {
             }
             return false;
         }
+    }
+
+    static Router adapt(Router router) {
+        Router currentRouter = router;
+        RedirectAdapter redirectAdapter = RouterConfig.getInstance().getRedirectAdapter();
+        int redirectTime = 0;
+        do {
+            router = currentRouter;
+            currentRouter = redirectAdapter.adapt(router);
+            redirectTime++;
+            if (redirectTime > 100) {
+                Log.e(RouterManager.class.getName(), "路由配置可能存在死循环:" + router.toUriStr() + "   <-- * -->   " + currentRouter.toUriStr());
+                //简单处理可能存在到死循环，继续往下走
+                break;
+            }
+        } while (!currentRouter.equals(router));
+        return router;
+    }
+
+    static boolean hasTarget(Router router) {
+        router = adapt(router);
+        return null != getMatchedClass(router);
     }
 
     @NonNull

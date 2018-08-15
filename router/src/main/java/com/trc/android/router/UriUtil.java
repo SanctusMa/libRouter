@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
  * <br>则：getParam(url,name)=hunter
  * <br>示例：url=http://baidu.com/search?name=hunter#/1233
  * <br>则：getParam(url,name)=hunter
- *
  */
 public class UriUtil {
     /**

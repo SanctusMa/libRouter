@@ -15,7 +15,7 @@ import com.trc.android.router.annotation.interceptor.RouterInterceptor;
 import com.trc.android.router.annotation.uri.RouterUri;
 
 import router.tairan.com.trrouter.interceptor.LoginInterceptor;
-import router.tairan.com.trrouter.interceptor.RealNameAouthInterceptor;
+import router.tairan.com.trrouter.interceptor.RealNameOauthInterceptor;
 
 @RouterUri(Pages.REAL_NAME_OAUTH)
 @RouterInterceptor(LoginInterceptor.class)
@@ -28,7 +28,7 @@ public class RealNameOauthActivity extends AppCompatActivity {
     }
 
     public void onClickOauth(View view) {
-        RealNameAouthInterceptor.isRealNameOauthPast = true;
+        RealNameOauthInterceptor.isRealNameOauthPast = true;
         Toast.makeText(this, "完成了实名认证", Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
