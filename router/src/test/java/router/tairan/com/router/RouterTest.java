@@ -31,6 +31,12 @@ public class RouterTest {
                 .equals("http://www.baidu.com?key=value");
 
         assert Router.from(context)
+                .setParam("key", "value")
+                .setUri("http://www.baidu.com?")
+                .toUriStr()
+                .equals("http://www.baidu.com?key=value");
+
+        assert Router.from(context)
                 .setUri("http://www.baidu.com?key=value")
                 .getParam("key")
                 .equals("value");
@@ -72,5 +78,47 @@ public class RouterTest {
                 .setParam("key", "value")
                 .toUriStr()
                 .equals("http://www.baidu.com/#?name=hunter&key=value");
+
+        assert Router.from(context)
+                .setParam("name", "hunter")
+                .setParam("key", "value")
+                .setUri("http://www.baidu.com/")
+                .toUriStr()
+                .equals("http://www.baidu.com/?name=hunter&key=value");
+
+        assert Router.from(context)
+                .setParam("name", "hunter")
+                .setParam("key", "value")
+                .setUri("http://www.baidu.com/?")
+                .toUriStr()
+                .equals("http://www.baidu.com/?name=hunter&key=value");
+
+        assert Router.from(context)
+                .setParam("name", "hunter")
+                .setParam("key", "value")
+                .setUri("http://www.baidu.com/?a=b")
+                .toUriStr()
+                .equals("http://www.baidu.com/?a=b&name=hunter&key=value");
+
+        assert Router.from(context)
+                .setParam("name", "hunter")
+                .setParam("key", "value")
+                .setUri("http://www.baidu.com/?a=b&")
+                .toUriStr()
+                .equals("http://www.baidu.com/?a=b&name=hunter&key=value");
+
+        assert Router.from(context)
+                .setParam("name", "hunter")
+                .setUri("http://www.baidu.com/?a=b&")
+                .setParam("key", "value")
+                .toUriStr()
+                .equals("http://www.baidu.com/?a=b&name=hunter&key=value");
+
+        assert Router.from(context)
+                .setUri("http://www.baidu.com/?a=b&")
+                .setParam("name", "hunter")
+                .setParam("key", "value")
+                .toUriStr()
+                .equals("http://www.baidu.com/?a=b&name=hunter&key=value");
     }
 }

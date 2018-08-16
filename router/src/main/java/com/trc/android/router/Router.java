@@ -89,12 +89,16 @@ public class Router {
             return this;
         } else {
             if (null == urlBuilder) urlBuilder = new StringBuilder();
-            if (urlBuilder.indexOf("?") > 0) {
+            if (urlBuilder.indexOf("?") > 0) {//表明已经有URL主体部分了
                 char lastChar = urlBuilder.charAt(urlBuilder.length() - 1);
-                if (lastChar != '?')
+                if (lastChar != '?' && lastChar != '&')
                     urlBuilder.append('&');
             } else if (urlBuilder.length() > 0) {
-                urlBuilder.append('?');
+                char lastChar = urlBuilder.charAt(urlBuilder.length() - 1);
+                if (lastChar != '?' && lastChar != '&') {
+                    boolean containsSchemeMark = urlBuilder.indexOf(":") > 0;//类似http://、file://开头或tel:133等，包含scheme标志，任务已经setUrl了
+                    urlBuilder.append(containsSchemeMark ? '?' : '&');
+                }
             }
             urlBuilder.append(key).append('=').append(value);
             return this;
@@ -146,12 +150,13 @@ public class Router {
             urlBuilder.append(uri);
         } else {
             char lastChar = uri.charAt(uri.length() - 1);
-            if (uri.indexOf('?') > 0) {
-                if (lastChar != '&')
-                    urlBuilder.insert(0, '&');
-            } else {
-                if (lastChar != '?')
+            if (lastChar != '?') {
+                if (uri.indexOf('?') > 0) {
+                    if (lastChar != '&')
+                        urlBuilder.insert(0, '&');
+                } else {
                     urlBuilder.insert(0, '?');
+                }
             }
             urlBuilder.insert(0, uri);
         }
