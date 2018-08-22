@@ -2,6 +2,7 @@ package com.trc.android.router;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
@@ -119,8 +120,7 @@ public class Router {
         if (null == interceptorClassList) {
             interceptorClassList = Arrays.asList(interceptorClasses);
         } else {
-            for (Class<? extends Interceptor> clazz : interceptorClasses)
-                interceptorClassList.add(clazz);
+            interceptorClassList.addAll(Arrays.asList(interceptorClasses));
         }
         return this;
     }

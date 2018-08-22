@@ -15,6 +15,7 @@ import com.trc.android.router.annotation.interceptor.RunInMainThread;
 import com.trc.android.router.annotation.uri.RouterUri;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,7 +26,6 @@ public class RouterManager {
     private static HashMap<String, Class> classCacheMap;
 
     /**
-     * @param router
      * @return true 是否找到了处理Router的类
      */
     static boolean route(Router router) {
@@ -51,7 +51,7 @@ public class RouterManager {
         }
     }
 
-    static Router adapt(Router router) {
+    private static Router adapt(Router router) {
         Router currentRouter = router;
         RedirectAdapter redirectAdapter = RouterConfig.getInstance().getRedirectAdapter();
         int redirectTime = 0;
@@ -60,7 +60,7 @@ public class RouterManager {
             currentRouter = redirectAdapter.adapt(router);
             redirectTime++;
             if (redirectTime > 100) {
-                Log.e(RouterManager.class.getName(), "路由配置可能存在死循环:" + router.toUriStr() + "   <-- * -->   " + currentRouter.toUriStr());
+                logWarning("Router config is probably running into a dead loop:" + router.toUriStr() + "   <-- * -->   " + currentRouter.toUriStr());
                 //简单处理可能存在到死循环，继续往下走
                 break;
             }
@@ -79,9 +79,8 @@ public class RouterManager {
         if (null != router.getInterceptorClasses())
             list.addAll(router.getInterceptorClasses());
         if (clazz.isAnnotationPresent(RouterInterceptor.class)) {
-            for (Class<? extends Interceptor> c : clazz.getAnnotation(RouterInterceptor.class).value()) {
-                list.add(c);
-            }
+            @SuppressWarnings("unchecked") Class<? extends Interceptor>[] value = clazz.getAnnotation(RouterInterceptor.class).value();
+            list.addAll(Arrays.asList(value));
         }
         return list;
     }
@@ -129,9 +128,9 @@ public class RouterManager {
 
     }
 
-    private static void handleByInterceptor(Class<? extends Interceptor> inceptorClass, Router router, final Class<?> targetClass, final Iterator<Class<? extends Interceptor>> iterator) {
+    private static void handleByInterceptor(Class<? extends Interceptor> interceptorClass, Router router, final Class<?> targetClass, final Iterator<Class<? extends Interceptor>> iterator) {
         try {
-            inceptorClass.newInstance().handle(router, router1 -> resolveByInterceptor(targetClass, router1, iterator));
+            interceptorClass.newInstance().handle(router, router1 -> resolveByInterceptor(targetClass, router1, iterator));
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -150,11 +149,25 @@ public class RouterManager {
         Class targetClass = classCacheMap.get(uri);
         if (null == targetClass) {
             int lastMatch = 0;
-            for (Class clazz : routerConfig.getClasses()) {
-                int match = match(uri, clazz);
+            for (Class<?> clazz : routerConfig.getClasses()) {
+                RouterUri annotation = clazz.getAnnotation(RouterUri.class);
+                if (null == annotation) {
+                    logWarning("-\nClass:" + clazz.getName() + " isn't annotated with RouterUri, " +
+                            "but it is scanned and compiled in AddressList.class. Try to clean the " +
+                            "whole project and rebuild it;");
+                    continue;
+                }
+                String[] uris = annotation.value();
+                int match = match(uri, uris);
                 if (match > lastMatch) {
                     lastMatch = match;
                     targetClass = clazz;
+                } else if (match != 0 && match == lastMatch) {
+                    logWarning("-\nThere are two Classes declared with a same annotation which "
+                            + "may result in upexpected problem:"
+                            + "\n@RouterUri:" + uri
+                            + "\nClass1:" + targetClass.getName()
+                            + "\nClass2:" + clazz.getName());
                 }
             }
             if (null != targetClass) classCacheMap.put(uri, targetClass);
@@ -162,19 +175,24 @@ public class RouterManager {
         return targetClass;
     }
 
+    private static void logWarning(String msg) {
+        Log.e("Router Warning", msg);
+    }
+
     /**
      * @return 0表示不匹配，>0表示匹配程度，匹配程度越高该值越大
      */
-    static int match(String targetUri, Class<?> clazz) {
-        //进行URI包含(startsWith)匹配
-        String[] uris = clazz.getAnnotation(RouterUri.class).value();
+    static int match(String targetUri, String[] uris) {
+        //进行URI包含(startsWith)匹配，返回匹配的程度
+        int match = 0;
         for (String item : uris) {
             if (targetUri.startsWith(item)) {
-                if (targetUri.length() == item.length()) return Integer.MAX_VALUE;//精准匹配
-                else return item.length();//包含匹配
+                if (match < item.length()) {
+                    match = item.length();
+                }
             }
         }
-        return 0;
+        return match;
     }
 
 }

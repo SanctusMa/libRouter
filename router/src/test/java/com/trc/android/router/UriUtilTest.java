@@ -1,4 +1,4 @@
-package router.tairan.com.router;
+package com.trc.android.router;
 
 import com.trc.android.router.UriUtil;
 
