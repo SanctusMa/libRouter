@@ -3,10 +3,13 @@
 buildscript {
     
     repositories {
-        jcenter()
         maven {
-            url 'https://maven.google.com/'
-            name 'Google'
+            name 'jcenter'//可省略
+            url "https://maven.aliyun.com/repository/jcenter"//阿里云仓库镜像地址
+        }
+        maven {
+            name 'google'//可省略
+            url "https://maven.aliyun.com/repository/google"//阿里云仓库镜像地址
         }
     }
     dependencies {
@@ -20,8 +23,14 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
-        jcenter()
+        maven {
+            name 'jcenter'//可省略
+            url "https://maven.aliyun.com/repository/jcenter"//阿里云仓库镜像地址
+        }
+        maven {
+            name 'google'//可省略
+            url "https://maven.aliyun.com/repository/google"//阿里云仓库镜像地址
+        }
         maven {//公司Maven私服
             url "http://121.41.17.205:18081/nexus/content/repositories/android-realeases"
         }
