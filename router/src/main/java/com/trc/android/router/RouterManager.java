@@ -68,9 +68,9 @@ public class RouterManager {
         return router;
     }
 
-    static boolean hasTarget(Router router) {
+    static Class getTarget(Router router) {
         router = adapt(router);
-        return null != getMatchedClass(router);
+        return getMatchedClass(router);
     }
 
     @NonNull

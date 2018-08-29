@@ -2,7 +2,6 @@ package com.trc.android.router;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
@@ -230,10 +229,17 @@ public class Router {
     }
 
     /**
+     * {@link #getTarget()}
+     *
      * @return 是否有处理该Uri的Handler（Class）
      */
+    @Deprecated
     public boolean hasHandler() {
-        return RouterManager.hasTarget(this);
+        return getTarget() != null;
+    }
+
+    public Class getTarget() {
+        return RouterManager.getTarget(this);
     }
 
     /**
