@@ -168,14 +168,16 @@ public class Router {
     }
 
     /**
-     * {@link #to(Uri)}
+     * {@link #to(String)}
+     * return true 表示找到了相应的Handler并被处理了
      */
     public boolean to(Uri uri) {
         return to(uri.toString());
     }
 
     /**
-     * 找到Router匹配的Class，然后调用该Class的start(Router router)静态方法返回一个包装好的对象
+     * {@link #to(Uri)}
+     * return true 表示找到了相应的Handler并被处理了
      */
     public boolean to(String uri) {
         setUri(uri);
@@ -185,6 +187,7 @@ public class Router {
     /**
      * 找到Router匹配的Class，然后调用该Class的toRemoteObject(Router router)静态方法返回一个包装好的对象
      */
+    @Nullable
     public Object transform() {
         try {
             Class matchedClass = RouterManager.getMatchedClass(this);

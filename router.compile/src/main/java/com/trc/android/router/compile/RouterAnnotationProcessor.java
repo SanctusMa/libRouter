@@ -2,6 +2,8 @@ package com.trc.android.router.compile;
 
 import com.google.auto.service.AutoService;
 import com.trc.android.router.annotation.compile.RouterAppModule;
+import com.trc.android.router.annotation.uri.RouterDes;
+import com.trc.android.router.annotation.uri.RouterMeta;
 import com.trc.android.router.annotation.uri.RouterUri;
 
 import java.io.BufferedReader;
@@ -39,7 +41,6 @@ public class RouterAnnotationProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         mFiler = processingEnv.getFiler();
-
     }
 
 
@@ -60,7 +61,14 @@ public class RouterAnnotationProcessor extends AbstractProcessor {
         }
 
         for (Element element : roundEnv.getElementsAnnotatedWith(RouterUri.class)) {
-            hashSet.add(element.toString());
+            Item item = new Item();
+            item.className = element.toString();
+            if (element.getAnnotation(RouterDes.class) != null)
+                item.des = element.getAnnotation(RouterDes.class).value();
+            if (element.getAnnotation(RouterMeta.class)!=null)
+                item.meta = element.getAnnotation(RouterMeta.class).value();
+            item.uris = element.getAnnotation(RouterUri.class).value();
+            hashSet.add(item.toString());
         }
         if (!roundEnv.processingOver()) return;
         if (isAppModule || !hashSet.isEmpty()) {
@@ -97,9 +105,16 @@ public class RouterAnnotationProcessor extends AbstractProcessor {
                 AnnotatedClass annotatedClass = new AnnotatedClass(hashSet);
                 annotatedClass.generateFile().writeTo(mFiler);
                 file.deleteOnExit();
+                String s = "注意本次扫描到的Class公共有" + hashSet.size() + "个";
+                printBlue(s);
+                DocUtil.generateDoc(hashSet);
             }
 
         }
+    }
+
+    private void printBlue(String s){
+        System.out.println("\033[34;4m"+s+"\033[0m");
     }
 
 

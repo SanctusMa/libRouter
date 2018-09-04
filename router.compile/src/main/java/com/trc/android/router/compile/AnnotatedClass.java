@@ -1,20 +1,15 @@
 package com.trc.android.router.compile;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 class AnnotatedClass {
 
@@ -34,12 +29,15 @@ class AnnotatedClass {
 
         StringBuilder classInitCodeBlock = new StringBuilder();
         classInitCodeBlock.append("new Class[]{\n");
-        boolean isFirst = true;
+        StringBuilder javaDoc = new StringBuilder();
         for (String t : typeElementList) {
-            if (isFirst) isFirst = false;
-            else classInitCodeBlock.append(',').append('\n');
-            classInitCodeBlock.append(t).append(".class");
+            Item item = Item.parse(t);
+            javaDoc.append("<P><b>Page:</b>&nbsp;&nbsp;<font color=\"#FF0000\">").append(item.des).append("</font>").append('\n')
+                    .append("<Br><b>Uri:&nbsp;&nbsp;</b>").append(Arrays.toString(item.uris)).append('\n')
+                    .append("<Br><b>Class:&nbsp;&nbsp;</b>\n").append(item.className).append('\n');
+            classInitCodeBlock.append(item.className).append(".class").append(',').append('\n');
         }
+        classInitCodeBlock.setLength(classInitCodeBlock.length() - 2);
         classInitCodeBlock.append('}');
         FieldSpec.Builder classesField = FieldSpec.builder(Class[].class, "CLASSES")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
@@ -50,6 +48,7 @@ class AnnotatedClass {
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(getAnnotatedClasses.build())
                 .addField(classesField.build())
+                .addJavadoc(CodeBlock.of("<b>总共" + typeElementList.size() + "个类</b>\n"+javaDoc.toString()))
                 .build();
         return JavaFile.builder("com.trc.android.router.build", injectClass).build();
     }
