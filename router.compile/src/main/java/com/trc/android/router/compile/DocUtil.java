@@ -14,17 +14,17 @@ public class DocUtil {
         StringBuilder javaDoc = new StringBuilder();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("#yyyy-MM-dd hh:mm:ss", Locale.CHINA);
         String generateTime = simpleDateFormat.format(System.currentTimeMillis());
-        javaDoc.append("## 总共扫描到" + typeElementList.size() + "个类\n")
-                .append("## 生成时间:" + generateTime).append("\n\n");
+        javaDoc.append("## 总共" + typeElementList.size() + "个路由\n");
+//                .append("## 生成时间:" + generateTime).append("\n\n");
         int i = 0;
         for (String t : typeElementList) {
             i++;
             Item item = Item.parse(t);
-            javaDoc.append("\n---\n* **Des:** ").append(item.des).append('\n')
+            javaDoc.append("\n---\n\n* **Des:** ").append(item.des).append('\n')
                     .append("* **Uri:** ").append(Arrays.toString(item.uris)).append('\n')
                     .append("* **Class:** ").append(item.className).append('\n');
             if (!"null".equals(item.meta))
-                javaDoc.append("* **Meta:** 参数解释及示例代码如下\n\n```\n").append(item.meta).append("\n```\n");
+                javaDoc.append("* **Meta:** 参数解释及示例代码如下\n    - ").append(item.meta.replaceAll("\n","\n    - ")).append("\n");
         }
         System.out.println(System.getProperties());
         File projectRootDir = null;
