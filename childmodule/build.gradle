@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-
 android {
     compileSdkVersion 27
 
@@ -31,5 +30,4 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     testImplementation 'junit:junit:4.12'
     api project(':router')
-    annotationProcessor project(':router.compile')
 }

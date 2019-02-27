@@ -1,5 +1,7 @@
 package router.tairan.com.trrouter;
 
+import com.trc.android.router.annotation.uri.RouterUri;
+
 public class Pages {
     public static final String BAIDU = "https://www.baidu.com";
     public static final String WANGYI = "https://www.163.com";

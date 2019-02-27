@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+//注意，该行代码需要写在 apply plugin: 'com.android.application' 后面
+//apply plugin: 'com.trc.android.router'
+
+//调试情况使用下面本地依赖方式
+apply plugin: com.trc.android.gradle.plugin.RouterPlugin
+
 android {
     compileSdkVersion 27
 
@@ -35,9 +41,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     implementation project(':childmodule')
-    annotationProcessor project(':router.compile')
 
 }
+

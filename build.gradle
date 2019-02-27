@@ -11,13 +11,14 @@ buildscript {
             name 'google'//可省略
             url "https://maven.aliyun.com/repository/google"//阿里云仓库镜像地址
         }
+        maven {//公司Maven私服
+            url "http://121.41.17.205:18081/nexus/content/repositories/android-realeases"
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
-        
+        classpath 'com.trc.android:routerPlugin:1.0.4'
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
@@ -44,6 +45,6 @@ task clean(type: Delete) {
 
 
 ext {
-    versionName = '2.0.7.3'
+    versionName = '2.1.0'
     groupId = 'com.trc.android'
 }

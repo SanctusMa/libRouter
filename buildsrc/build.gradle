@@ -1,0 +1,35 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+dependencies {
+    //gradle sdk
+    compile gradleApi()
+    //groovy sdk
+    compile localGroovy()
+
+    compile 'com.android.tools.build:gradle:3.1.4'
+    //引入javassist类库
+    compile 'org.javassist:javassist:3.24.0-GA'
+}
+
+repositories {
+    google()
+    jcenter()
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'http://121.41.17.205:18081/nexus/content/repositories/android-realeases') {
+                authentication(userName: 'hzht', password: '123456')
+            }
+            pom.project {
+                groupId 'com.trc.android'
+                artifactId 'routerPlugin'
+                version '1.0.6'
+//                packaging 'jar'
+            }
+        }
+    }
+}
