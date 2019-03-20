@@ -20,10 +20,10 @@ class JavassistInject {
         if (!dir.isDirectory()) {
             if (path.endsWith(".jar")) {
                 JarFile jarFile = new JarFile(path);
-                Enumeration<JarEntry> entrys = jarFile.entries();
+                Enumeration<JarEntry> entrys = jarFile.entries()
                 while (entrys.hasMoreElements()) {
-                    JarEntry jarEntry = entrys.nextElement();
-                    String className = jarEntry.getName().replace(File.separator, ".");
+                    JarEntry jarEntry = entrys.nextElement()
+                    String className = jarEntry.getName().replaceAll('/', '.')
                     if (className.endsWith(".class")) {
                         className = className.substring(0, className.length() - 6)
                         classSet.add(className)
@@ -40,7 +40,7 @@ class JavassistInject {
                 String filePath = file.absolutePath
                 // 确保当前文件是class文件，并且不是系统自动生成的class文件，暂时屏蔽掉kotlin的类
                 if (filePath.endsWith(".class")) {
-                    String className = (filePath.substring(dir.getPath().length() + 1, filePath.length() - 6)).replaceAll(File.separator, '.')
+                    String className = (filePath.substring(dir.getPath().length() + 1, filePath.length() - 6)).replace((char)File.separatorChar, '.'.charAt(0))
                     classSet.add(className)
                 }
             }

@@ -27,7 +27,7 @@ uploadArchives {
             pom.project {
                 groupId 'com.trc.android'
                 artifactId 'routerPlugin'
-                version '1.0.6'
+                version '1.0.8'
 //                packaging 'jar'
             }
         }
