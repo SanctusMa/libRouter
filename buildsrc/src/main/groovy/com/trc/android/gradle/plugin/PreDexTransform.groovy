@@ -69,8 +69,9 @@ class PreDexTransform extends Transform {
         pool.appendSystemPath()
         String androidJarPath = mProject.android.bootClasspath[0].toString()
         //将project.android.bootClasspath 加入android.jar
+        LogUtil.error("将将将将将将:"+androidJarPath)
         pool.appendClassPath(androidJarPath)
-        HashSet allScannedClass = new HashSet();
+        HashSet allScannedClass = new HashSet()
         def lastDest = null
         inputs.each { TransformInput input ->
             input.jarInputs.each { JarInput jarInput ->
@@ -102,9 +103,9 @@ class PreDexTransform extends Transform {
             }
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 LogUtil.error("directoryInput name = " + directoryInput.name + ", path = " + directoryInput.file.absolutePath)
-                pool.appendClassPath(directoryInput.file.getAbsolutePath())
+                pool.appendClassPath(directoryInput.file.absolutePath)
                 //插入字节码
-                JavassistInject.scanClass(directoryInput.file.getAbsolutePath(), allScannedClass)
+                JavassistInject.scanClass(directoryInput.file.absolutePath, allScannedClass)
 
                 //修改后文件的输出路径
                 def dest = outputProvider.getContentLocation(directoryInput.name,
@@ -117,6 +118,7 @@ class PreDexTransform extends Transform {
         LogUtil.error("RouterPlugin已完成Class扫描")
 
         JavassistInject.generateRouterMapClass(allScannedClass, pool, lastDest)
+        JavassistInject.generateRouterDoc(allScannedClass, pool)
 
     }
 
